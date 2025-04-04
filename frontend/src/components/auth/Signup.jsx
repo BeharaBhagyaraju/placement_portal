@@ -160,12 +160,15 @@ const Signup = () => {
               Signup
             </Button>
           )}
-          <span className="text-sm">
-            Already have an account?{" "}
-            <Link to="/login" className="text-blue-600">
-              Login
-            </Link>
-          </span>
+
+          <div className="text-sm mt-2 flex flex-col gap-1">
+            <span>
+              Already have an account?{" "}
+              <Link to="/login" className="text-blue-600 hover:underline">
+                Login
+              </Link>
+            </span>
+          </div>
         </form>
       </div>
     </div>
