@@ -200,7 +200,7 @@ export const forgotPassword = async (req, res) => {
     user.resetTokenExpiry = resetTokenExpiry;
     await user.save();
 
-    const resetLink = `http://localhost:5173/reset-password/${resetToken}`;
+    const resetLink = 'http://localhost:5173/reset-password/${resetToken}';
 
     return res.status(200).json({
       success: true,
@@ -253,4 +253,3 @@ export const resetPassword = async (req, res) => {
       res.status(500).json({ success: false, message: "Server error." });
     }
   };
-  

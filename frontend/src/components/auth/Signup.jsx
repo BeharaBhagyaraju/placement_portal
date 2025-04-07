@@ -20,7 +20,9 @@ const Signup = () => {
     password: "",
     role: "",
     file: "",
+    cgpa: "", // NEW FIELD
   });
+
   const { loading, user } = useSelector((store) => store.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -28,12 +30,14 @@ const Signup = () => {
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
+
   const changeFileHandler = (e) => {
     setInput({ ...input, file: e.target.files?.[0] });
   };
+
   const submitHandler = async (e) => {
     e.preventDefault();
-    const formData = new FormData(); //formdata object
+    const formData = new FormData();
     formData.append("fullname", input.fullname);
     formData.append("email", input.email);
     formData.append("phoneNumber", input.phoneNumber);
@@ -41,6 +45,9 @@ const Signup = () => {
     formData.append("role", input.role);
     if (input.file) {
       formData.append("file", input.file);
+    }
+    if (input.role === "student") {
+      formData.append("cgpa", input.cgpa);
     }
 
     try {
@@ -55,7 +62,7 @@ const Signup = () => {
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Signup failed");
     } finally {
       dispatch(setLoading(false));
     }
@@ -66,6 +73,7 @@ const Signup = () => {
       navigate("/");
     }
   }, []);
+
   return (
     <div>
       <Navbar />
@@ -112,9 +120,26 @@ const Signup = () => {
               value={input.password}
               name="password"
               onChange={changeEventHandler}
-              placeholder="patel@gmail.com"
+              placeholder="********"
             />
           </div>
+
+          {input.role === "student" && (
+            <div className="my-2">
+              <Label>CGPA</Label>
+              <Input
+                type="number"
+                name="cgpa"
+                step="0.1"
+                min="0"
+                max="10"
+                value={input.cgpa}
+                onChange={changeEventHandler}
+                placeholder="e.g., 8.5"
+              />
+            </div>
+          )}
+
           <div className="flex items-center justify-between">
             <RadioGroup className="flex items-center gap-4 my-5">
               <div className="flex items-center space-x-2">
@@ -150,10 +175,11 @@ const Signup = () => {
               />
             </div>
           </div>
+
           {loading ? (
-            <Button className="w-full my-4">
-              {" "}
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please wait{" "}
+            <Button className="w-full my-4" disabled>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Please wait
             </Button>
           ) : (
             <Button type="submit" className="w-full my-4">
