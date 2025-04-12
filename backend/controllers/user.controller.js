@@ -8,13 +8,30 @@ import cloudinary from "../utils/cloudinary.js";
 // --- REGISTER ---
 export const register = async (req, res) => {
   try {
-    const { fullname, email, phoneNumber, password, role } = req.body;
+    const { fullname, email, phoneNumber, password, role, cgpa } = req.body;
 
     if (!fullname || !email || !phoneNumber || !password || !role) {
       return res.status(400).json({
         message: "Something is missing",
         success: false,
       });
+    }
+
+    if (role === "student") {
+      if (cgpa === undefined || cgpa === null || cgpa === "") {
+        return res.status(400).json({
+          message: "CGPA is required for students.",
+          success: false,
+        });
+      }
+
+      const cgpaValue = parseFloat(cgpa);
+      if (isNaN(cgpaValue) || cgpaValue < 0.0 || cgpaValue > 10.0) {
+        return res.status(400).json({
+          message: "CGPA must be a number between 0.0 and 10.0",
+          success: false,
+        });
+      }
     }
 
     const file = req.file;
@@ -31,7 +48,7 @@ export const register = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    await User.create({
+    const userPayload = {
       fullname,
       email,
       phoneNumber,
@@ -40,7 +57,14 @@ export const register = async (req, res) => {
       profile: {
         profilePhoto: cloudResponse.secure_url,
       },
-    });
+    };
+
+    // Add CGPA only if student
+    if (role === "student") {
+      userPayload.cgpa = parseFloat(cgpa);
+    }
+
+    await User.create(userPayload);
 
     return res.status(201).json({
       message: "Account created successfully.",
@@ -48,6 +72,10 @@ export const register = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
+    return res.status(500).json({
+      message: "Server error during registration",
+      success: false,
+    });
   }
 };
 

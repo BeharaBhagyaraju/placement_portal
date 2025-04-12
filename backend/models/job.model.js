@@ -16,9 +16,9 @@ const jobSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    experienceLevel:{
-        type:Number,
-        required:true,
+    experienceLevel: {
+        type: Number,
+        required: true,
     },
     location: {
         type: String,
@@ -31,6 +31,11 @@ const jobSchema = new mongoose.Schema({
     position: {
         type: Number,
         required: true
+    },
+    minimumCGPA: {
+        type: Number,
+        required: true,
+        default: 0 // you can set a default if needed
     },
     company: {
         type: mongoose.Schema.Types.ObjectId,
@@ -48,5 +53,6 @@ const jobSchema = new mongoose.Schema({
             ref: 'Application',
         }
     ]
-},{timestamps:true});
+}, { timestamps: true });
+
 export const Job = mongoose.model("Job", jobSchema);

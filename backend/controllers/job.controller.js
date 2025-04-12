@@ -1,4 +1,5 @@
 import { Job } from "../models/job.model.js";
+import { User } from "../models/user.model.js";
 
 // admin post krega job
 export const postJob = async (req, res) => {
@@ -8,7 +9,7 @@ export const postJob = async (req, res) => {
 
         if (!title || !description || !requirements || !salary || !location || !jobType || !experience || !position || !companyId) {
             return res.status(400).json({
-                message: "Somethin is missing.",
+                message: "Something is missing.",
                 success: false
             })
         };
@@ -100,3 +101,56 @@ export const getAdminJobs = async (req, res) => {
         console.log(error);
     }
 }
+
+
+
+export const applyToJob = async (req, res) => {
+    try {
+        const studentId = req.id;
+        const jobId = req.params.jobId;
+
+        // Find the job
+        const job = await Job.findById(jobId);
+        if (!job) {
+            return res.status(404).json({ message: "Job not found", success: false });
+        }
+
+        // Check if user already applied
+        if (job.applications.includes(studentId)) {
+            return res.status(400).json({ message: "You have already applied to this job", success: false });
+        }
+
+        // Get student CGPA
+        const student = await User.findById(studentId);
+        if (!student) {
+            return res.status(404).json({ message: "Student not found", success: false });
+        }
+
+        const studentCGPA = student.cgpa;
+
+        // Check CGPA eligibility
+        if (job.minimumCGPA && studentCGPA < job.minimumCGPA) {
+            return res.status(403).json({
+                message: `You are not eligible to apply. Required CGPA is ${job.minimumCGPA}`,
+                success: false
+            });
+        }
+
+        // Push student ID to applications
+        job.applications.push(studentId);
+        await job.save();
+
+        return res.status(200).json({
+            message: "You have successfully applied to the job",
+            success: true
+        });
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "Something went wrong",
+            success: false
+        });
+    }
+};
+
