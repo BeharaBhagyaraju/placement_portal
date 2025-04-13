@@ -125,6 +125,7 @@ export const login = async (req, res) => {
       phoneNumber: user.phoneNumber,
       role: user.role,
       profile: user.profile,
+      cgpa: user.cgpa,
     };
 
     return res
