@@ -59,19 +59,20 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
         } catch (error) {
             console.log(error);
             toast.error(error.response.data.message);
-        } finally{
+        } finally {
             setLoading(false);
         }
         setOpen(false);
         console.log(input);
     }
 
-
-
     return (
         <div>
             <Dialog open={open}>
-                <DialogContent className="sm:max-w-[425px]" onInteractOutside={() => setOpen(false)}>
+                <DialogContent 
+                    className="sm:max-w-[425px] bg-white shadow-xl rounded-xl" 
+                    onInteractOutside={() => setOpen(false)}
+                >
                     <DialogHeader>
                         <DialogTitle>Update Profile</DialogTitle>
                     </DialogHeader>
@@ -143,7 +144,14 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
                         </div>
                         <DialogFooter>
                             {
-                                loading ? <Button className="w-full my-4"> <Loader2 className='mr-2 h-4 w-4 animate-spin' /> Please wait </Button> : <Button type="submit" className="w-full my-4">Update</Button>
+                                loading ? (
+                                    <Button className="w-full my-4">
+                                        <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                                        Please wait
+                                    </Button>
+                                ) : (
+                                    <Button type="submit" className="w-full my-4">Update</Button>
+                                )
                             }
                         </DialogFooter>
                     </form>
